@@ -162,6 +162,7 @@ Mappings:
     us-east-2: {"InstanceSize":"c5.xlarge"}
     us-west-1: {"InstanceSize":"c5.xlarge"}
     us-west-2: {"InstanceSize":"c5.xlarge"}
+    us-gov-west-1: {"InstanceSize":"c5.xlarge"}
     ca-central-1: {"InstanceSize":"c5.xlarge"}
     eu-west-1: {"InstanceSize":"c5.xlarge"}
     eu-central-1: {"InstanceSize":"c5.xlarge"}
@@ -292,12 +293,12 @@ Resources:
           Action:
           - autoscaling:SetDesiredCapacity
           Resource:
-          - !Sub arn:aws:autoscaling:${AWS::Region}:${AWS::AccountId}:autoScalingGroup:*:autoScalingGroupName/${RestoreAutoScalingGroup}
-          - !Sub arn:aws:autoscaling:${AWS::Region}:${AWS::AccountId}:autoScalingGroup:*:autoScalingGroupName/${RestoreInstanceLaunchConfig}
+          - !Sub arn:${AWS::Partition}:autoscaling:${AWS::Region}:${AWS::AccountId}:autoScalingGroup:*:autoScalingGroupName/${RestoreAutoScalingGroup}
+          - !Sub arn:${AWS::Partition}:autoscaling:${AWS::Region}:${AWS::AccountId}:autoScalingGroup:*:autoScalingGroupName/${RestoreInstanceLaunchConfig}
         - Effect: Allow
           Action:
           - s3:PutObject
-          Resource: !Sub arn:aws:s3:::${RestoreLogBucket}/*
+          Resource: !Sub arn:${AWS::Partition}:s3:::${RestoreLogBucket}/*
         - Effect: Allow
           Action:
           - ec2:DescribeTags
@@ -305,7 +306,7 @@ Resources:
         - Effect: Allow
           Action:
           - sns:Publish
-          Resource: !Sub arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${SNSTopic.TopicName}
+          Resource: !Sub arn:${AWS::Partition}:sns:${AWS::Region}:${AWS::AccountId}:${SNSTopic.TopicName}
       Roles:
       - !Sub ${EC2Role}
 
@@ -346,7 +347,7 @@ Resources:
             - logs:CreateLogGroup
             - logs:CreateLogStream
             - logs:PutLogEvents
-            Resource: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*
+            Resource: !Sub arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*
           - Effect: Allow
             Action:
             - ec2:DescribeImages
